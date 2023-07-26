@@ -54,4 +54,9 @@ public class Group : Entity
     {
         RaiseDomainEvent(new GroupRemovedDomainEvent(Id));
     }
+
+    public bool HasSufficientGroupCapacity(double totalConnectorCurrent)
+    {
+        return CapacityInAmps >= totalConnectorCurrent;
+    }
 }

@@ -11,6 +11,7 @@ public class ConnectorServiceTests
 {
     private Mock<IChargeStationRepository> _mockStationRepository;
     private Mock<IConnectorRepository> _mockConnectorRepository;
+    private Mock<IGroupRepository> _mockGroupRepository;
     private Mock<IUnitOfWork> _mockUnitOfWork;
 
     private ConnectorService _service;
@@ -19,9 +20,13 @@ public class ConnectorServiceTests
     {
         _mockStationRepository = new Mock<IChargeStationRepository>();
         _mockConnectorRepository = new Mock<IConnectorRepository>();
+        _mockGroupRepository = new Mock<IGroupRepository>();
         _mockUnitOfWork = new Mock<IUnitOfWork>();
 
-        _service = new ConnectorService(_mockStationRepository.Object, _mockConnectorRepository.Object, _mockUnitOfWork.Object);
+        _service = new ConnectorService(_mockStationRepository.Object,
+            _mockConnectorRepository.Object,
+            _mockUnitOfWork.Object,
+            _mockGroupRepository.Object);
     }
 
     [Fact]

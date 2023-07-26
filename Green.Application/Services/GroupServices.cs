@@ -48,5 +48,5 @@ public class GroupService : IGroupService
         _groupRepository.Remove(group);
 
         await _unitOfWork.CompleteAsync();
-    }
+    }  
 }
