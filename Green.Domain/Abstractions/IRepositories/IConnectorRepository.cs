@@ -1,11 +1,12 @@
-﻿namespace Green.Domain.Abstractions;
+﻿using Green.Domain.Entities;
+
+namespace Green.Domain.Abstractions.IRepositories;
 
 public interface IConnectorRepository
 {
     void Add(Connector connector);
-    Task<Connector> GetByChargeStationId(Guid id);
+    Task<List<Connector>> GetByChargeStationId(Guid id);
     Task<Connector> GetById(Guid connectorId);
     void Remove(Connector connector);
-    Task SaveChangesAsync();
     void Update(Connector connector);
 }

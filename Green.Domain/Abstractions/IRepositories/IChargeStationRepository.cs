@@ -1,4 +1,6 @@
-﻿namespace Green.Domain.Abstractions;
+﻿using Green.Domain.Entities;
+
+namespace Green.Domain.Abstractions.IRepositories;
 
 public interface IChargeStationRepository
 {
@@ -7,6 +9,5 @@ public interface IChargeStationRepository
     Task<ChargeStation> GetById(Guid stationId);
     Task<bool> HasChargeStationInAnyGroupId(Guid groupId);
     void Remove(ChargeStation station);
-    Task SaveChangesAsync();
     void Update(ChargeStation chargeStation);
 }

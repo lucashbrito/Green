@@ -1,6 +1,9 @@
 ﻿using Green.Domain.Abstractions;
+using Green.Domain.Abstractions.IRepositories;
+using Green.Domain.Abstractions.IServices;
+using Green.Domain.Entities;
 
-namespace Green.Application.Connector;
+namespace Green.Application.Services;
 
 public class ConnectorService : IConnectorService
 {
@@ -15,17 +18,13 @@ public class ConnectorService : IConnectorService
         _unitOfWork = unitOfWork;
     }
 
-    public async Task<Domain.Connector> CreateConnector(Guid stationId, int identifier, int maxCurrentInAmps)
+    public async Task<Connector> CreateConnector(Guid stationId, int identifier, int maxCurrentInAmps)
     {
         var station = await _chargeStationRepository.GetById(stationId);
 
-        var connector = new Domain.Connector(identifier, maxCurrentInAmps, station);
-
-        // station.AddConnector(connector);
+        var connector = new Connector(identifier, maxCurrentInAmps, station);
 
         _connectorRepository.Add(connector);
-
-        //_chargeStationRepository.Add(station); vai ter que ter um n p n? 
 
         await _unitOfWork.CompleteAsync();
 
@@ -34,7 +33,7 @@ public class ConnectorService : IConnectorService
 
     public async Task UpdateConnectorMaxCurrent(Guid connectorId, int maxCurrentInAmps)
     {
-        Domain.Connector connector = await _connectorRepository.GetById(connectorId);
+        Connector connector = await _connectorRepository.GetById(connectorId);
         connector.ChangeMaxCurrent(maxCurrentInAmps);
 
         _connectorRepository.Update(connector);
@@ -43,16 +42,25 @@ public class ConnectorService : IConnectorService
 
     public async Task RemoveConnector(Guid stationId, Guid connectorId)
     {
-        var station = await _chargeStationRepository.GetById(stationId);
         var connector = await _connectorRepository.GetById(connectorId);
 
         if (connector is null)
             return;
 
-        //o certo aqui seria criar um event handler para o evento de remocao de station
-        //station.RemoveConnector(connector);
-
         _connectorRepository.Remove(connector);
+
+        await _unitOfWork.CompleteAsync();
+    }
+
+    public async Task RemoveConnectorByChargeStation(Guid stationId)
+    {
+        var connectors = await _connectorRepository.GetByChargeStationId(stationId);
+
+        if (connectors is null)
+            return;
+
+        foreach (var connector in connectors)
+            _connectorRepository.Remove(connector);
 
         await _unitOfWork.CompleteAsync();
     }

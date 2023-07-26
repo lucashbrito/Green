@@ -4,9 +4,9 @@ namespace Green.Infrastructure
 {
     public class UnitOfWork : IUnitOfWork
     {
-        private readonly DbContext _context;
+        private readonly GreenDbContext _context;
 
-        public UnitOfWork(DbContext context)
+        public UnitOfWork(GreenDbContext context)
         {
             _context = context;
         }

@@ -1,6 +1,9 @@
 ﻿using Green.Domain.Abstractions;
+using Green.Domain.Abstractions.IRepositories;
+using Green.Domain.Abstractions.IServices;
+using Green.Domain.Entities;
 
-namespace Green.Application.ChargeStation;
+namespace Green.Application.Services;
 
 public class ChargeStationService : IChargeStationService
 {
@@ -14,11 +17,11 @@ public class ChargeStationService : IChargeStationService
         _unitOfWork = unitOfWork;
     }
 
-    public async Task<Domain.ChargeStation> CreateChargeStation(Guid groupId, string name)
+    public async Task<ChargeStation> CreateChargeStation(Guid groupId, string name)
     {
         var group = await _groupRepository.GetById(groupId);
 
-        var chargeStation = new Domain.ChargeStation(name, group);
+        var chargeStation = new ChargeStation(name, group);
 
         group.AddChargeStation(chargeStation);
 
@@ -31,29 +34,30 @@ public class ChargeStationService : IChargeStationService
 
     public async Task UpdateChargeStation(Guid stationId, string name, Guid groupId)
     {
-        var group = await _groupRepository.GetById(groupId);
-
         var chargeStation = await _chargeStationRepository.GetById(stationId);
 
         chargeStation.ChangeName(name);
 
-        if (!await _chargeStationRepository.HasChargeStationInAnyGroupId(groupId))
-            chargeStation.SetGroup(group);
+        if (groupId != Guid.Empty)
+        {
+            var group = await _groupRepository.GetById(groupId);
+
+            if (!await _chargeStationRepository.HasChargeStationInAnyGroupId(groupId))
+                chargeStation.SetGroup(group);
+        }
 
         _chargeStationRepository.Update(chargeStation);
 
         await _unitOfWork.CompleteAsync();
     }
 
-    public async Task RemoveChargeStation(Guid groupId, Guid stationId)
+    public async Task RemoveChargeStation(Guid stationId)
     {
-        var group = _groupRepository.GetById(groupId);
+        var station = await _chargeStationRepository.GetById(stationId);
 
-        var station = _chargeStationRepository.GetById(stationId);
+        station.RemoveConnectors();
 
-        //group.RemoveChargeStation(station);
-
-        //_chargeStationRepository.Remove(station);
+        _chargeStationRepository.Remove(station);
 
         await _unitOfWork.CompleteAsync();
     }

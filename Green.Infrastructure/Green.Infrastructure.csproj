@@ -18,4 +18,9 @@
     <None Include="C:\Users\lucas.brito\Documents\Projects\Green\Green.Infrastructure\.editorconfig" />
   </ItemGroup>
 
+  <ItemGroup>
+    <PackageReference Include="Microsoft.EntityFrameworkCore" Version="7.0.9" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore.Sqlite" Version="7.0.9" />
+  </ItemGroup>
+
 </Project>
