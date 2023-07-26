@@ -40,7 +40,7 @@ public class ConnectorService : IConnectorService
         await _unitOfWork.CompleteAsync();
     }
 
-    public async Task RemoveConnector(Guid stationId, Guid connectorId)
+    public async Task RemoveConnector( Guid connectorId)
     {
         var connector = await _connectorRepository.GetById(connectorId);
 

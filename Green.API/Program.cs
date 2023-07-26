@@ -1,21 +1,40 @@
+using Green.Infrastructure;
+using Green.Application;
+
 namespace Green.API
 {
     public class Program
     {
         public static void Main(string[] args)
         {
-            var builder = WebApplication.CreateSlimBuilder(args);
+            var builder = WebApplication.CreateBuilder(args);
+
+            builder.Services.AddControllers();
+
+            builder.Services.AddEndpointsApiExplorer();
+            builder.Services.AddSwaggerGen();
+
+            builder.Services.SetApplications();
+
+            builder.Services.SetRepositories(builder.Configuration.GetConnectionString("DefaultConnection"));
 
             var app = builder.Build();
 
-            var sampleTodos = TodoGenerator.GenerateTodos().ToArray();
+            Infrastructure.Configuration.Migration(app.Services);
 
-            var todosApi = app.MapGroup("/todos");
-            todosApi.MapGet("/", () => sampleTodos);
-            todosApi.MapGet("/{id}", (int id) =>
-                sampleTodos.FirstOrDefault(a => a.Id == id) is { } todo
-                    ? Results.Ok(todo)
-                    : Results.NotFound());
+            // Configure the HTTP request pipeline.
+            if (app.Environment.IsDevelopment())
+            {
+                app.UseSwagger();
+                app.UseSwaggerUI();
+            }
+
+            app.UseHttpsRedirection();
+
+            app.UseAuthorization();
+
+
+            app.MapControllers();
 
             app.Run();
         }

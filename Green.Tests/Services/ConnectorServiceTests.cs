@@ -71,7 +71,7 @@ public class ConnectorServiceTests
         _mockConnectorRepository.Setup(m => m.GetById(connectorId)).ReturnsAsync(connector);
 
         // Act
-        await _service.RemoveConnector(Guid.NewGuid(), connectorId);
+        await _service.RemoveConnector(connectorId);
 
         // Assert
         _mockConnectorRepository.Verify(m => m.Remove(It.IsAny<Connector>()), Times.Once);

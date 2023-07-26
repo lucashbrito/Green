@@ -11,6 +11,7 @@ public class ChargeStation : Entity
 
     public IReadOnlyCollection<Connector> Connectors => _connectors.AsReadOnly();
 
+    protected ChargeStation() { }
 
     public ChargeStation(string name, Group group)
     {

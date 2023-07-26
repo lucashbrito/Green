@@ -8,6 +8,7 @@ public class Connector : Entity
     public int MaxCurrentInAmps { get; private set; }
     public Guid ChargeStationId { get; private set; }
 
+    protected Connector() { }
     public Connector(int identifier, int maxCurrentInAmps, ChargeStation chargeStation)
     {
         IsBetweenOneAndFive(identifier);
