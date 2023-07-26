@@ -1,5 +1,6 @@
-using Green.Infrastructure;
 using Green.Application;
+using Green.Infrastructure;
+using System.Reflection;
 
 namespace Green.API
 {
@@ -14,15 +15,14 @@ namespace Green.API
             builder.Services.AddEndpointsApiExplorer();
             builder.Services.AddSwaggerGen();
 
+            builder.Services.AddMediatR(cfg => cfg.RegisterServicesFromAssembly(Assembly.GetExecutingAssembly()));
+
             builder.Services.SetApplications();
 
             builder.Services.SetRepositories(builder.Configuration.GetConnectionString("DefaultConnection"));
 
             var app = builder.Build();
 
-            Infrastructure.Configuration.Migration(app.Services);
-
-            // Configure the HTTP request pipeline.
             if (app.Environment.IsDevelopment())
             {
                 app.UseSwagger();

@@ -3,6 +3,10 @@
 public abstract class Entity : IEquatable<Entity>
 {
     private readonly List<IDomainEvent> _domainEvents = new();
+
+    public IReadOnlyCollection<IDomainEvent> GetDomainEvents() => _domainEvents?.ToList();
+    public void ClearDomainEvents() => _domainEvents.Clear();
+
     public Guid Id { get; private init; }
 
     protected Entity()

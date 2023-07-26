@@ -10,4 +10,5 @@ public interface IChargeStationRepository
     Task<bool> HasChargeStationInAnyGroupId(Guid groupId);
     void Remove(ChargeStation station);
     void Update(ChargeStation chargeStation);
+    Task<List<ChargeStation>> GetAll();
 }

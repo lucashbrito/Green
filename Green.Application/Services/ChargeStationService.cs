@@ -61,4 +61,7 @@ public class ChargeStationService : IChargeStationService
 
         await _unitOfWork.CompleteAsync();
     }
+
+    public async Task<List<ChargeStation>> GetAll()
+        => await _chargeStationRepository.GetAll();
 }

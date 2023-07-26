@@ -22,6 +22,12 @@ namespace Green.API.Controllers.ChargeStation.V1
             return Created($"/api/chargeStation/{chargeStation.Id}", chargeStation);
         }
 
+        [HttpGet("")]
+        public async Task<IActionResult> GetAll()
+        {
+            return Ok(await _service.GetAll());
+        }
+
         [HttpPut("{id}")]
         public async Task<IActionResult> UpdateChargeStation(Guid id, ChargeStationV1Model chargeStationModel)
         {

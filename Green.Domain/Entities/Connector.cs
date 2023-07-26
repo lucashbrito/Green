@@ -19,7 +19,7 @@ public class Connector : Entity
         MaxCurrentInAmps = maxCurrentInAmps;
 
         if (chargeStation is null)
-            throw new ArgumentNullException(nameof(chargeStation));
+            throw new ArgumentNullException("Charge station not found",nameof(chargeStation));
 
         ChargeStationId = chargeStation.Id;
     }

@@ -15,6 +15,9 @@ public class ConnectorRepository : IConnectorRepository
     public void Add(Connector connector)
         => _dbContext.Connectors.Add(connector);
 
+    public async Task<List<Connector>> GetAll()
+        => await _dbContext.Connectors.ToListAsync();
+
     public async Task<List<Connector>> GetByChargeStationId(Guid id)
     => await _dbContext.Connectors.Where(c => c.ChargeStationId == id).ToListAsync();
 

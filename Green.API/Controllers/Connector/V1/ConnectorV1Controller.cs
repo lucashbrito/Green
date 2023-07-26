@@ -22,6 +22,13 @@ namespace Green.API.Controllers.Connector.V1
             return Created($"/api/connector/{connector.Id}", connector);
         }
 
+        [HttpGet("")]
+        public async Task<IActionResult> GetAll()
+        {
+            return Ok(await _service.GetAll());
+        }
+
+
         [HttpPut("{id}")]
         public async Task<IActionResult> UpdateConnectorMaxCurrent(Guid id, [FromBody] ConnectorV1Model connectorModel)
         {

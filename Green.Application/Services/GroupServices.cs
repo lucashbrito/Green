@@ -48,5 +48,10 @@ public class GroupService : IGroupService
         _groupRepository.Remove(group);
 
         await _unitOfWork.CompleteAsync();
-    }  
+    }
+
+    public async Task<List<Group>> GetAll()
+    {
+        return await _groupRepository.GetAll();
+    }
 }

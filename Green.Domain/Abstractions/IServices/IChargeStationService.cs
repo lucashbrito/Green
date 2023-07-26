@@ -7,5 +7,6 @@ namespace Green.Domain.Abstractions.IServices
         Task<ChargeStation> CreateChargeStation(Guid groupId, string name);
         Task UpdateChargeStation(Guid stationId, string name, Guid groupId);
         Task RemoveChargeStation(Guid stationId);
+        Task<List<ChargeStation>> GetAll();
     }
 }

@@ -9,7 +9,7 @@ public class ChargeStation : Entity
     public string Name { get; private set; }
     public Guid GroupId { get; private set; }
 
-    public IReadOnlyCollection<Connector> Connectors => _connectors.AsReadOnly();
+    public IReadOnlyCollection<Connector> Connectors => _connectors?.AsReadOnly();
 
     protected ChargeStation() { }
 
@@ -32,7 +32,9 @@ public class ChargeStation : Entity
 
     public void ChangeName(string name)
     {
-        if (string.IsNullOrWhiteSpace(name)) throw new ArgumentException("Name cannot be empty", nameof(name));
+        if (string.IsNullOrWhiteSpace(name))
+            throw new ArgumentException("Name cannot be empty", nameof(name));
+
         Name = name;
     }
 

@@ -8,4 +8,5 @@ public interface IConnectorService
     Task UpdateConnectorMaxCurrent(Guid connectorId, int maxCurrentInAmps);
     Task RemoveConnector(Guid connectorId);
     Task RemoveConnectorByChargeStation(Guid stationId);
+    Task<List<Connector>> GetAll();
 }

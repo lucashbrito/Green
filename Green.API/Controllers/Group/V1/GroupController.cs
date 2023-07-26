@@ -22,6 +22,14 @@ public class GroupController : ControllerBase
         return Created($"/api/group/{group.Id}", group);
     }
 
+    [HttpGet("")]
+    public async Task<IActionResult> GetAll()
+    {
+        return Ok(await _service.GetAll());
+    }
+
+
+
     [HttpPut("{id}")]
     public async Task<IActionResult> UpdateGroup(Guid id, [FromBody] GroupV1Model groupModel)
     {

@@ -15,6 +15,9 @@ public class ChargeStationRepository : IChargeStationRepository
     public void Add(ChargeStation chargeStation)
         => _dbContext.ChargeStations.Add(chargeStation);
 
+    public async Task<List<ChargeStation>> GetAll()
+        => await _dbContext.ChargeStations.ToListAsync();
+
     public async Task<List<ChargeStation>> GetByGroupId(Guid groupId)
         => await _dbContext.ChargeStations.Where(c => c.GroupId == groupId).ToListAsync();
 

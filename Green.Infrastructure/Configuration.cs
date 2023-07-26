@@ -16,16 +16,7 @@ namespace Green.Infrastructure
             services.AddScoped<IGroupRepository, GroupRepository>();
             services.AddScoped<IUnitOfWork, UnitOfWork>();
 
-            services.AddDbContext<GreenDbContext>(options => options.UseSqlite(greenDbConnectionString));
-        }
-
-        public static void Migration(IServiceProvider serviceProvider)
-        {
-            using (var serviceScope = serviceProvider.CreateScope())
-            {
-                var context = serviceScope.ServiceProvider.GetRequiredService<GreenDbContext>();
-                context.Database.Migrate();
-            }
+            services.AddDbContext<GreenDbContext>(options => options.UseInMemoryDatabase("GreenDbContext"));
         }
     }
 }

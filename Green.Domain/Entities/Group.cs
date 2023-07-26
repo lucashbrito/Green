@@ -10,7 +10,7 @@ public class Group : Entity
     public string Name { get; private set; }
     public int CapacityInAmps { get; private set; }
 
-    public IReadOnlyCollection<ChargeStation> ChargeStations => _chargeStations.AsReadOnly();
+    public IReadOnlyCollection<ChargeStation> ChargeStations => _chargeStations?.AsReadOnly();
 
     protected Group() { }
     public Group(string name, int capacityInAmps)
@@ -44,10 +44,10 @@ public class Group : Entity
 
     public void AddChargeStation(ChargeStation chargeStation)
     {
-        if (_chargeStations.Count >= 5)
+        if (_chargeStations?.Count >= 5)
             throw new InvalidOperationException("Cannot add more than 5 charge stations to a group");
 
-        _chargeStations.Add(chargeStation);
+        _chargeStations?.Add(chargeStation);
     }
 
     public void RemoveChargeStations()

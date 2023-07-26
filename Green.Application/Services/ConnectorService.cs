@@ -27,10 +27,10 @@ public class ConnectorService : IConnectorService
     {
         var station = await _chargeStationRepository.GetById(stationId);
 
+        var connector = new Connector(identifier, maxCurrentInAmps, station);
+
         if (!await CheckGroupCapacity(station.GroupId))
             throw new InvalidOperationException("The group's capacity is not sufficient.");
-
-        var connector = new Connector(identifier, maxCurrentInAmps, station);
 
         _connectorRepository.Add(connector);
 
@@ -72,7 +72,7 @@ public class ConnectorService : IConnectorService
             var connectors = await _connectorRepository.GetByChargeStationId(station.Id);
             totalConnectorCurrent += connectors.Sum(c => c.MaxCurrentInAmps);
         }
-         
+
         return group.HasSufficientGroupCapacity(totalConnectorCurrent);
     }
 
@@ -80,7 +80,7 @@ public class ConnectorService : IConnectorService
     {
         var connectors = await _connectorRepository.GetByChargeStationId(stationId);
 
-        if (connectors is null)
+        if (connectors is null || !connectors.Any())
             return;
 
         foreach (var connector in connectors)
@@ -88,4 +88,7 @@ public class ConnectorService : IConnectorService
 
         await _unitOfWork.CompleteAsync();
     }
+
+    public async Task<List<Connector>> GetAll()
+        => await _connectorRepository.GetAll();
 }
