@@ -72,7 +72,7 @@ public class ConnectorService : IConnectorService
             var connectors = await _connectorRepository.GetByChargeStationId(station.Id);
             totalConnectorCurrent += connectors.Sum(c => c.MaxCurrentInAmps);
         }
-
+         
         return group.HasSufficientGroupCapacity(totalConnectorCurrent);
     }
 
