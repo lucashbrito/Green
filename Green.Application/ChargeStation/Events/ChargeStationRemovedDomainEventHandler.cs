@@ -2,7 +2,7 @@
 using Green.Domain.DomainEvents;
 using MediatR;
 
-namespace Green.Application.Events
+namespace Green.Application.ChargeStation.Events
 {
     public class ChargeStationRemovedDomainEventHandler : INotificationHandler<ChargeStationRemovedDomainEvent>
     {

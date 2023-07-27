@@ -1,5 +1,7 @@
 ﻿using Green.API.Controllers.Connector.V1.Model;
-using Green.Domain.Abstractions.IServices;
+using Green.Application.Connector.Commands;
+using Green.Application.Connector.Queries;
+using MediatR;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Green.API.Controllers.Connector.V1
@@ -8,38 +10,38 @@ namespace Green.API.Controllers.Connector.V1
     [Route("api/connector")]
     public class ConnectorController : ControllerBase
     {
-        private readonly IConnectorService _service;
+        private readonly IMediator _mediator;
 
-        public ConnectorController(IConnectorService service)
+        public ConnectorController(IMediator mediator)
         {
-            _service = service;
+            _mediator = mediator;
         }
 
         [HttpPost]
         public async Task<IActionResult> CreateConnector([FromBody] ConnectorV1Model connectorModel)
         {
-            var connector = await _service.CreateConnector(connectorModel.StationId, connectorModel.Identifier, connectorModel.MaxCurrentInAmps);
+            var connector = await _mediator.Send(new CreateConnectorCommand(connectorModel.StationId, connectorModel.Identifier, connectorModel.MaxCurrentInAmps));
             return Created($"/api/connector/{connector.Id}", connector);
         }
 
         [HttpGet("")]
         public async Task<IActionResult> GetAll()
         {
-            return Ok(await _service.GetAll());
+            return Ok(await _mediator.Send(new GetAllConnectorsQuery()));
         }
 
 
         [HttpPut("{id}")]
         public async Task<IActionResult> UpdateConnectorMaxCurrent(Guid id, [FromBody] ConnectorV1Model connectorModel)
         {
-            await _service.UpdateConnectorMaxCurrent(id, connectorModel.MaxCurrentInAmps);
+            await _mediator.Send(new UpdateConnectorMaxCurrentCommand(id, connectorModel.MaxCurrentInAmps));
             return NoContent();
         }
 
         [HttpDelete("{connectorId}")]
         public async Task<IActionResult> RemoveConnector(Guid connectorId)
         {
-            await _service.RemoveConnector(connectorId);
+            await _mediator.Send(new RemoveConnectorCommand(connectorId));
             return NoContent();
         }
     }

@@ -2,5 +2,5 @@
 
 public interface IUnitOfWork
 {
-    Task CompleteAsync();
+    Task CompleteAsync(CancellationToken cancellationToken);
 }

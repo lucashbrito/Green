@@ -15,11 +15,12 @@ namespace Green.API
             builder.Services.AddEndpointsApiExplorer();
             builder.Services.AddSwaggerGen();
 
-            builder.Services.AddMediatR(cfg => cfg.RegisterServicesFromAssembly(Assembly.GetExecutingAssembly()));
+            builder.Services.AddApplications();
 
-            builder.Services.SetApplications();
+            //it could be potentially gets from Azure Key Vault
+            var connectionString = builder.Configuration.GetConnectionString("DefaultConnection");
 
-            builder.Services.SetRepositories(builder.Configuration.GetConnectionString("DefaultConnection"));
+            builder.Services.SetRepositories(connectionString);
 
             var app = builder.Build();
 

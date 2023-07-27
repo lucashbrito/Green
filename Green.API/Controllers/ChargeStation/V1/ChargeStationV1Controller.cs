@@ -1,5 +1,7 @@
 using Green.API.Controllers.ChargeStation.V1.Model;
-using Green.Domain.Abstractions.IServices;
+using Green.Application.ChargeStation.Commands;
+using Green.Application.ChargeStation.Queries;
+using MediatR;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Green.API.Controllers.ChargeStation.V1
@@ -8,37 +10,37 @@ namespace Green.API.Controllers.ChargeStation.V1
     [Route("api/chargeStation")]
     public class ChargeStationV1Controller : ControllerBase
     {
-        private readonly IChargeStationService _service;
+        private readonly IMediator _mediator;
 
-        public ChargeStationV1Controller(IChargeStationService service)
+        public ChargeStationV1Controller(IMediator mediator)
         {
-            _service = service;
+            _mediator = mediator;
         }
 
         [HttpPost("")]
         public async Task<IActionResult> CreateChargeStation(ChargeStationV1Model chargeStationModel)
         {
-            var chargeStation = await _service.CreateChargeStation(chargeStationModel.GroupId, chargeStationModel.Name);
+            var chargeStation = await _mediator.Send(new CreateChargeStationCommand(chargeStationModel.GroupId, chargeStationModel.Name));
             return Created($"/api/chargeStation/{chargeStation.Id}", chargeStation);
         }
 
         [HttpGet("")]
         public async Task<IActionResult> GetAll()
         {
-            return Ok(await _service.GetAll());
+            return Ok(await _mediator.Send(new GetAllChargeStationsQuery()));
         }
 
         [HttpPut("{id}")]
         public async Task<IActionResult> UpdateChargeStation(Guid id, ChargeStationV1Model chargeStationModel)
         {
-            await _service.UpdateChargeStation(id, chargeStationModel.Name, chargeStationModel.GroupId);
+            await _mediator.Send(new UpdateChargeStationCommand(id, chargeStationModel.Name, chargeStationModel.GroupId));
             return NoContent();
         }
 
         [HttpDelete("{id}")]
         public async Task<IActionResult> RemoveChargeStation(Guid id)
         {
-            await _service.RemoveChargeStation(id);
+            await _mediator.Send(new RemoveChargeStationCommand(id));
             return NoContent();
         }
     }

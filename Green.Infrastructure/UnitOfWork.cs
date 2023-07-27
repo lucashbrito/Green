@@ -11,9 +11,9 @@ namespace Green.Infrastructure
             _context = context;
         }
 
-        public async Task CompleteAsync()
+        public async Task CompleteAsync(CancellationToken cancellationToken)
         {
-            await _context.SaveChangesAsync();
+            await _context.SaveChangesAsync(cancellationToken);
         }
 
         public void Dispose()
