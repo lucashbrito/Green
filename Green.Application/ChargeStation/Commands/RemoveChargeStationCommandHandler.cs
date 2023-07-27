@@ -1,5 +1,6 @@
 ﻿using Green.Domain.Abstractions;
 using Green.Domain.Abstractions.IRepositories;
+using Green.Domain.Extensions;
 using MediatR;
 
 namespace Green.Application.ChargeStation.Commands
@@ -19,7 +20,9 @@ namespace Green.Application.ChargeStation.Commands
 
         public async Task Handle(RemoveChargeStationCommand request, CancellationToken cancellationToken)
         {
-            var station = await _chargeStationRepository.GetById(request.StationId) ?? throw new ArgumentException("Charge station not found", nameof(request.StationId));
+            var station = await _chargeStationRepository.GetById(request.StationId);
+
+            station.NullGuard("Charge station not found", nameof(request.StationId));
 
             station.RemoveConnectors();
 

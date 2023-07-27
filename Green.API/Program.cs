@@ -1,5 +1,7 @@
+using Green.API.Middleware;
 using Green.Application;
 using Green.Infrastructure;
+using Microsoft.AspNetCore.Mvc.Filters;
 using System.Reflection;
 
 namespace Green.API
@@ -31,6 +33,7 @@ namespace Green.API
             }
 
             app.UseHttpsRedirection();
+            app.UseMiddleware<ErrorHandling>();
 
             app.UseAuthorization();
 

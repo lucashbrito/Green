@@ -16,7 +16,7 @@ public class ChargeStation : Entity
     public ChargeStation(string name, Group group)
     {
         if (string.IsNullOrWhiteSpace(name))
-            throw new ArgumentException("Name cannot be empty", nameof(name));
+            throw new ArgumentNullException("Name cannot be empty", nameof(name));
 
         Name = name;
         SetGroup(group);
@@ -27,7 +27,7 @@ public class ChargeStation : Entity
     public void ChangeName(string name)
     {
         if (string.IsNullOrWhiteSpace(name))
-            throw new ArgumentException("Name cannot be empty", nameof(name));
+            throw new ArgumentNullException("Name cannot be empty", nameof(name));
 
         Name = name;
     }

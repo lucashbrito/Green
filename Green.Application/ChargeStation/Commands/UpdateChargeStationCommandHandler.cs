@@ -1,5 +1,6 @@
 ﻿using Green.Domain.Abstractions;
 using Green.Domain.Abstractions.IRepositories;
+using Green.Domain.Extensions;
 using MediatR;
 
 namespace Green.Application.ChargeStation.Commands;
@@ -23,6 +24,8 @@ public class UpdateChargeStationCommandHandler : IRequestHandler<UpdateChargeSta
     public async Task Handle(UpdateChargeStationCommand request, CancellationToken cancellationToken)
     {
         var chargeStation = await _chargeStationRepository.GetById(request.StationId);
+
+        chargeStation.NullGuard("Charge station not found", nameof(request.StationId));
 
         chargeStation.ChangeName(request.Name);
 

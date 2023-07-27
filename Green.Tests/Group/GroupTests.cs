@@ -1,4 +1,5 @@
 ﻿using FluentAssertions;
+using FluentAssertions.Common;
 using Green.Application.Group.Commands;
 using Green.Domain.Abstractions;
 using Green.Domain.Abstractions.IRepositories;
@@ -31,7 +32,7 @@ public class GroupCommandHandlerTests
         result.Should().NotBeNull();
         result.Name.Should().Be("Test Group");
         result.CapacityInAmps.Should().Be(100);
-        _mockGroupRepository.Verify(m => m.Add(It.IsAny<Domain.Entities.    Group>()), Times.Once);
+        _mockGroupRepository.Verify(m => m.Add(It.IsAny<Domain.Entities.Group>()), Times.Once);
         _mockUnitOfWork.Verify(m => m.CompleteAsync(It.IsAny<CancellationToken>()), Times.Once);
     }
 

@@ -1,5 +1,6 @@
 ﻿using Green.Domain.Abstractions;
 using Green.Domain.Abstractions.IRepositories;
+using Green.Domain.Extensions;
 using MediatR;
 
 namespace Green.Application.ChargeStation.Commands;
@@ -24,12 +25,9 @@ public class CreateChargeStationCommandHandler : IRequestHandler<CreateChargeSta
     {
         var group = await _groupRepository.GetById(request.GroupId);
 
-        if (group is null)
-            throw new ArgumentNullException("Group cannot be null", nameof(group));
+        group.NullGuard("Group cannot be null", nameof(group));
 
         var chargeStation = new Domain.Entities.ChargeStation(request.Name, group);
-
-        group.AddChargeStation(chargeStation);
 
         _chargeStationRepository.Add(chargeStation);
 

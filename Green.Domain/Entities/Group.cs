@@ -16,10 +16,10 @@ public class Group : Entity
     public Group(string name, int capacityInAmps)
     {
         if (string.IsNullOrWhiteSpace(name))
-            throw new ArgumentException("Name cannot be empty", nameof(name));
+            throw new ArgumentNullException("Name cannot be empty", nameof(name));
 
         if (capacityInAmps <= 0)
-            throw new ArgumentException("Capacity must be greater than zero", nameof(capacityInAmps));
+            throw new InvalidOperationException("Capacity must be greater than zero");
 
         Name = name;
         CapacityInAmps = capacityInAmps;
@@ -29,7 +29,7 @@ public class Group : Entity
     public void ChangeName(string name)
     {
         if (string.IsNullOrWhiteSpace(name))
-            throw new ArgumentException("Name cannot be empty", nameof(name));
+            throw new ArgumentNullException("Name cannot be empty", nameof(name));
 
         Name = name;
     }
@@ -37,17 +37,9 @@ public class Group : Entity
     public void ChangeCapacity(int capacity)
     {
         if (capacity <= 0)
-            throw new ArgumentException("Capacity must be greater than zero", nameof(capacity));
+            throw new InvalidOperationException("Capacity must be greater than zero");
 
         CapacityInAmps = capacity;
-    }
-
-    public void AddChargeStation(ChargeStation chargeStation)
-    {
-        if (_chargeStations?.Count >= 5)
-            throw new InvalidOperationException("Cannot add more than 5 charge stations to a group");
-
-        _chargeStations?.Add(chargeStation);
     }
 
     public void RemoveChargeStations()

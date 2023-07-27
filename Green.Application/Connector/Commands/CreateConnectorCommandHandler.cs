@@ -31,7 +31,7 @@ namespace Green.Application.Connector.Commands
 
             station.NullGuard("station not found", nameof(station));
 
-            var connector = new Domain.Entities.Connector(request.Identifier, request.MaxCurrentInAmps, station);
+            var connector = new Domain.Entities.Connector(request.Identifier, request.MaxCurrentInAmps, station.Id);
 
             if (!await CheckGroupCapacity(station.GroupId))
                 throw new InvalidOperationException("The group's capacity is not sufficient.");
@@ -51,6 +51,9 @@ namespace Green.Application.Connector.Commands
 
             var chargeStations = await _chargeStationRepository.GetByGroupId(groupId);
             var totalConnectorCurrent = 0.0;
+
+            if (chargeStations is null)
+                return group.HasSufficientGroupCapacity(totalConnectorCurrent);
 
             foreach (var station in chargeStations)
             {
