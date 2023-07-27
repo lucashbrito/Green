@@ -19,7 +19,7 @@ namespace Green.Application.ChargeStation.Commands
 
         public async Task Handle(RemoveChargeStationCommand request, CancellationToken cancellationToken)
         {
-            var station = await _chargeStationRepository.GetById(request.StationId);
+            var station = await _chargeStationRepository.GetById(request.StationId) ?? throw new ArgumentException("Charge station not found", nameof(request.StationId));
 
             station.RemoveConnectors();
 

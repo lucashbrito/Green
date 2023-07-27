@@ -24,12 +24,6 @@ public class ChargeStation : Entity
         _connectors = new();
     }
 
-    private static void IsGroupNull(Group group)
-    {
-        if (group is null)
-            throw new ArgumentNullException("Group cannot be null", nameof(group));
-    }
-
     public void ChangeName(string name)
     {
         if (string.IsNullOrWhiteSpace(name))
@@ -40,8 +34,6 @@ public class ChargeStation : Entity
 
     public void SetGroup(Group group)
     {
-        IsGroupNull(group);
-
         if (GroupId == group.Id)
             return;
 

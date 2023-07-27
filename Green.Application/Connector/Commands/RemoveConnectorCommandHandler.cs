@@ -1,5 +1,6 @@
-﻿using Green.Domain.Abstractions.IRepositories;
-using Green.Domain.Abstractions;
+﻿using Green.Domain.Abstractions;
+using Green.Domain.Abstractions.IRepositories;
+using Green.Domain.Extensions;
 using MediatR;
 
 namespace Green.Application.Connector.Commands;
@@ -21,8 +22,7 @@ public class RemoveConnectorCommandHandler : IRequestHandler<RemoveConnectorComm
     {
         var connector = await _connectorRepository.GetById(request.ConnectorId);
 
-        if (connector is null)
-            return;
+        connector.NullGuard("connector not found", nameof(connector));
 
         _connectorRepository.Remove(connector);
 

@@ -24,6 +24,9 @@ public class CreateChargeStationCommandHandler : IRequestHandler<CreateChargeSta
     {
         var group = await _groupRepository.GetById(request.GroupId);
 
+        if (group is null)
+            throw new ArgumentNullException("Group cannot be null", nameof(group));
+
         var chargeStation = new Domain.Entities.ChargeStation(request.Name, group);
 
         group.AddChargeStation(chargeStation);

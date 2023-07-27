@@ -1,5 +1,6 @@
 ﻿using Green.Domain.Abstractions;
 using Green.Domain.Abstractions.IRepositories;
+using Green.Domain.Extensions;
 using MediatR;
 
 namespace Green.Application.Group.Commands
@@ -19,7 +20,9 @@ namespace Green.Application.Group.Commands
 
         public async Task Handle(UpdateGroupCommand request, CancellationToken cancellationToken)
         {
-            var group = await _groupRepository.GetById(request.GroupId) ?? throw new Exception("Group not found");
+            var group = await _groupRepository.GetById(request.GroupId);
+
+            group.NullGuard("Group not found", nameof(group));            
 
             group.ChangeName(request.Name);
             group.ChangeCapacity(request.CapacityInAmps);

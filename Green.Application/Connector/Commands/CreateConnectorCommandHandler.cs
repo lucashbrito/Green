@@ -1,5 +1,6 @@
 ﻿using Green.Domain.Abstractions;
 using Green.Domain.Abstractions.IRepositories;
+using Green.Domain.Extensions;
 using MediatR;
 
 namespace Green.Application.Connector.Commands
@@ -28,6 +29,8 @@ namespace Green.Application.Connector.Commands
         {
             var station = await _chargeStationRepository.GetById(request.StationId);
 
+            station.NullGuard("station not found", nameof(station));
+
             var connector = new Domain.Entities.Connector(request.Identifier, request.MaxCurrentInAmps, station);
 
             if (!await CheckGroupCapacity(station.GroupId))
@@ -43,6 +46,8 @@ namespace Green.Application.Connector.Commands
         private async Task<bool> CheckGroupCapacity(Guid groupId)
         {
             var group = await _groupRepository.GetById(groupId);
+
+            group.NullGuard("Group not found", nameof(group));
 
             var chargeStations = await _chargeStationRepository.GetByGroupId(groupId);
             var totalConnectorCurrent = 0.0;

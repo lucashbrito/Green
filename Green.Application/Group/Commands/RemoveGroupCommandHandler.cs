@@ -1,5 +1,6 @@
 ﻿using Green.Domain.Abstractions;
 using Green.Domain.Abstractions.IRepositories;
+using Green.Domain.Extensions;
 using MediatR;
 
 namespace Green.Application.Group.Commands;
@@ -17,7 +18,9 @@ public class RemoveGroupCommandHandler : IRequestHandler<RemoveGroupCommand>
 
     public async Task Handle(RemoveGroupCommand request, CancellationToken cancellationToken)
     {
-        var group = await _groupRepository.GetById(request.GroupId) ?? throw new Exception("Group not found");
+        var group = await _groupRepository.GetById(request.GroupId);
+        
+        group.NullGuard("Group not found", nameof(group));
 
         group.RemoveChargeStations();
 

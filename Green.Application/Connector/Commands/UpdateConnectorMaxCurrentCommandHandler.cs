@@ -1,5 +1,6 @@
 ﻿using Green.Domain.Abstractions;
 using Green.Domain.Abstractions.IRepositories;
+using Green.Domain.Extensions;
 using MediatR;
 
 namespace Green.Application.Connector.Commands;
@@ -20,6 +21,9 @@ public class UpdateConnectorMaxCurrentCommandHandler : IRequestHandler<UpdateCon
     public async Task Handle(UpdateConnectorMaxCurrentCommand request, CancellationToken cancellationToken)
     {
         var connector = await _connectorRepository.GetById(request.ConnectorId);
+
+        connector.NullGuard("connector not found", nameof(connector));
+
         connector.ChangeMaxCurrent(request.MaxCurrentInAmps);
 
         _connectorRepository.Update(connector);

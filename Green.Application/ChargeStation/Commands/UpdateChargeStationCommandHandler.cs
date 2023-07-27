@@ -28,10 +28,13 @@ public class UpdateChargeStationCommandHandler : IRequestHandler<UpdateChargeSta
 
         if (request.GroupId != Guid.Empty)
         {
-            var group = await _groupRepository.GetById(request.GroupId);
-
             if (!await _chargeStationRepository.HasChargeStationInAnyGroupId(request.GroupId))
-                chargeStation.SetGroup(group);
+            {
+                var group = await _groupRepository.GetById(request.GroupId);
+
+                if (group is not null)
+                    chargeStation.SetGroup(group);
+            }
         }
 
         _chargeStationRepository.Update(chargeStation);
