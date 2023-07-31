@@ -1,8 +1,8 @@
-﻿using Green.Domain.Abstractions.IRepositories;
-using Green.Domain.Abstractions;
+﻿using Green.Domain.Abstractions;
+using Green.Domain.Abstractions.IRepositories;
 using Green.Infrastructure.Repositories;
-using Microsoft.Extensions.DependencyInjection;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.DependencyInjection;
 
 namespace Green.Infrastructure
 {
@@ -11,7 +11,14 @@ namespace Green.Infrastructure
 
         public static void SetRepositories(this IServiceCollection services, string greenDbConnectionString)
         {
+            services.AddMemoryCache();
+
             services.AddScoped<IChargeStationRepository, ChargeStationRepository>();
+
+            services.Decorate<IChargeStationRepository, CachedChargeStationRepository>();
+            services.Decorate<IConnectorRepository, CachedConnectorRepository>();
+            services.Decorate<IGroupRepository, CachedGroupRepository>();
+
             services.AddScoped<IConnectorRepository, ConnectorRepository>();
             services.AddScoped<IGroupRepository, GroupRepository>();
             services.AddScoped<IUnitOfWork, UnitOfWork>();
