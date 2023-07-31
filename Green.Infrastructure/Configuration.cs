@@ -14,14 +14,13 @@ namespace Green.Infrastructure
             services.AddMemoryCache();
 
             services.AddScoped<IChargeStationRepository, ChargeStationRepository>();
-
-            services.Decorate<IChargeStationRepository, CachedChargeStationRepository>();
-            services.Decorate<IConnectorRepository, CachedConnectorRepository>();
-            services.Decorate<IGroupRepository, CachedGroupRepository>();
-
             services.AddScoped<IConnectorRepository, ConnectorRepository>();
             services.AddScoped<IGroupRepository, GroupRepository>();
             services.AddScoped<IUnitOfWork, UnitOfWork>();
+
+            services.Decorate<IChargeStationRepository, CachedChargeStationRepository>();
+            services.Decorate<IConnectorRepository, CachedConnectorRepository>();
+            services.Decorate<IGroupRepository, CachedGroupRepository>();   
 
             services.AddDbContext<GreenDbContext>(options => options.UseInMemoryDatabase("GreenDbContext"));
         }
