@@ -7,8 +7,8 @@ namespace Green.Application.Group.Events;
 
 public class GroupRemovedDomainEventHandler : INotificationHandler<GroupRemovedDomainEvent>
 {
-    IChargeStationRepository _chargeStationRepository;
-    IConnectorService _connectorService;
+    private readonly IChargeStationRepository _chargeStationRepository;
+    private readonly IConnectorService _connectorService;
 
     public GroupRemovedDomainEventHandler(IChargeStationRepository chargeStationRepository, IConnectorService connectorService)
     {

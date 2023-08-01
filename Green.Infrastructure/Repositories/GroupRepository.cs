@@ -6,7 +6,7 @@ namespace Green.Infrastructure.Repositories;
 
 public class GroupRepository : IGroupRepository
 {
-    private GreenDbContext _dbContext;
+    private readonly GreenDbContext _dbContext;
 
     public GroupRepository(GreenDbContext dbContext)
     {

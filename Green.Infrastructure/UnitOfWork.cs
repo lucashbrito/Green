@@ -6,7 +6,7 @@ namespace Green.Infrastructure
 {
     public class UnitOfWork : IUnitOfWork
     {
-        private IPublisher _publisher;
+        private readonly IPublisher _publisher;
         private readonly GreenDbContext _context;
 
         public UnitOfWork(GreenDbContext context, IPublisher publisher)

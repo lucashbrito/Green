@@ -6,7 +6,7 @@ namespace Green.Infrastructure.Repositories;
 
 public class ChargeStationRepository : IChargeStationRepository
 {
-    private GreenDbContext _dbContext;
+    private readonly GreenDbContext _dbContext;
 
     public ChargeStationRepository(GreenDbContext dbContext)
     {

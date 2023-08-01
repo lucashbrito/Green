@@ -6,14 +6,12 @@ namespace Green.Infrastructure;
 
 public class GreenDbContext : DbContext
 {
-    private IPublisher _publisher;
     public DbSet<Group> Groups { get; set; }
     public DbSet<ChargeStation> ChargeStations { get; set; }
     public DbSet<Connector> Connectors { get; set; }
 
-    public GreenDbContext(DbContextOptions<GreenDbContext> options, IPublisher publisher) : base(options)
+    public GreenDbContext(DbContextOptions<GreenDbContext> options) : base(options)
     {
-        _publisher = publisher;
     }
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)

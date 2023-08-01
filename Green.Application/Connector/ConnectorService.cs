@@ -5,7 +5,7 @@ namespace Green.Application.Connector;
 
 public class ConnectorService : IConnectorService
 {
-    private IConnectorRepository _connectorRepository;
+    private readonly IConnectorRepository _connectorRepository;
 
     public ConnectorService(IConnectorRepository connectorRepository)
     {

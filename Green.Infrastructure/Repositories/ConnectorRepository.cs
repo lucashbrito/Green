@@ -6,7 +6,7 @@ namespace Green.Infrastructure.Repositories;
 
 public class ConnectorRepository : IConnectorRepository
 {
-    private GreenDbContext _dbContext;
+    private readonly GreenDbContext _dbContext;
 
     public ConnectorRepository(GreenDbContext dbContext)
     {

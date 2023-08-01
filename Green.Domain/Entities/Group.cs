@@ -5,18 +5,18 @@ namespace Green.Domain.Entities;
 
 public class Group : Entity
 {
-    private List<ChargeStation> _chargeStations;
+    private readonly List<ChargeStation> _chargeStations;
 
     public string Name { get; private set; }
     public int CapacityInAmps { get; private set; }
 
-    public IReadOnlyCollection<ChargeStation> ChargeStations => _chargeStations?.AsReadOnly();
+    public IReadOnlyCollection<ChargeStation> ChargeStations => _chargeStations.AsReadOnly();
 
     protected Group() { _chargeStations = new(); }
     public Group(string name, int capacityInAmps)
     {
         if (string.IsNullOrWhiteSpace(name))
-            throw new ArgumentNullException("Name cannot be empty", nameof(name));
+            throw new ArgumentNullException(nameof(name), "Name cannot be empty");
 
         if (capacityInAmps <= 0)
             throw new InvalidOperationException("Capacity must be greater than zero");
@@ -29,7 +29,7 @@ public class Group : Entity
     public void ChangeName(string name)
     {
         if (string.IsNullOrWhiteSpace(name))
-            throw new ArgumentNullException("Name cannot be empty", nameof(name));
+            throw new ArgumentNullException(nameof(name), "Name cannot be empty");
 
         Name = name;
     }

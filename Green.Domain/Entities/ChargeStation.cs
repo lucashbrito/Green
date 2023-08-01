@@ -5,7 +5,7 @@ namespace Green.Domain.Entities;
 
 public class ChargeStation : Entity
 {
-    private List<Connector> _connectors;
+    private readonly List<Connector> _connectors;
     public string Name { get; private set; }
     public Guid GroupId { get; private set; }
 
@@ -16,7 +16,7 @@ public class ChargeStation : Entity
     public ChargeStation(string name, Group group)
     {
         if (string.IsNullOrWhiteSpace(name))
-            throw new ArgumentNullException("Name cannot be empty", nameof(name));
+            throw new ArgumentNullException(nameof(name), "Name cannot be empty");
 
         Name = name;
         SetGroup(group);
@@ -27,7 +27,7 @@ public class ChargeStation : Entity
     public void ChangeName(string name)
     {
         if (string.IsNullOrWhiteSpace(name))
-            throw new ArgumentNullException("Name cannot be empty", nameof(name));
+            throw new ArgumentNullException(nameof(name), "Name cannot be empty");
 
         Name = name;
     }
