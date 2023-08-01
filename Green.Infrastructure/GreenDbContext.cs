@@ -1,5 +1,4 @@
 ﻿using Green.Domain.Entities;
-using Green.Domain.Primitives;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
 
@@ -22,34 +21,11 @@ public class GreenDbContext : DbContext
         modelBuilder.Entity<Group>()
           .HasMany(g => g.ChargeStations)
           .WithOne();
-     
+
         modelBuilder.Entity<ChargeStation>()
             .HasMany(c => c.Connectors)
             .WithOne();
-    
+
         base.OnModelCreating(modelBuilder);
-    }
-
-    public override async Task<int> SaveChangesAsync(CancellationToken cancellationToken = default)
-    {
-        var domainEvents = ChangeTracker.Entries<Entity>()
-            .Select(e => e.Entity)
-            .SelectMany(entities =>
-            {
-                var domainEvents = entities.GetDomainEvents();
-
-                entities.ClearDomainEvents();
-
-                return domainEvents;
-            }).ToList();
-
-        foreach (var domainEvent in domainEvents)
-        {
-            await _publisher.Publish(domainEvent, cancellationToken);
-        }
-
-        var result = await base.SaveChangesAsync(cancellationToken);
-
-        return result;
     }
 }

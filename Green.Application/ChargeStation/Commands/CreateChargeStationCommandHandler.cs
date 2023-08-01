@@ -1,13 +1,13 @@
-﻿using Green.Domain.Abstractions;
+﻿using Green.Application.Abstractions.Commands;
+using Green.Domain.Abstractions;
 using Green.Domain.Abstractions.IRepositories;
-using Green.Domain.Extensions;
-using MediatR;
+using Green.Domain.Shared;
 
 namespace Green.Application.ChargeStation.Commands;
 
-public record CreateChargeStationCommand(Guid GroupId, string Name) : IRequest<Domain.Entities.ChargeStation>;
+public record CreateChargeStationCommand(Guid GroupId, string Name) : ICommand<Domain.Entities.ChargeStation>;
 
-public class CreateChargeStationCommandHandler : IRequestHandler<CreateChargeStationCommand, Domain.Entities.ChargeStation>
+public class CreateChargeStationCommandHandler : ICommandHandler<CreateChargeStationCommand, Domain.Entities.ChargeStation>
 {
     private readonly IGroupRepository _groupRepository;
     private readonly IChargeStationRepository _chargeStationRepository;
@@ -21,11 +21,13 @@ public class CreateChargeStationCommandHandler : IRequestHandler<CreateChargeSta
         _unitOfWork = unitOfWork;
     }
 
-    public async Task<Domain.Entities.ChargeStation> Handle(CreateChargeStationCommand request, CancellationToken cancellationToken)
+
+    public async Task<Result<Domain.Entities.ChargeStation>> Handle(CreateChargeStationCommand request, CancellationToken cancellationToken)
     {
         var group = await _groupRepository.GetById(request.GroupId);
 
-        group.NullGuard("Group cannot be null", nameof(group));
+        if (group is null)
+            return Result<Domain.Entities.ChargeStation>.Failure($"Group with id {request.GroupId} not found");
 
         var chargeStation = new Domain.Entities.ChargeStation(request.Name, group);
 
@@ -33,6 +35,6 @@ public class CreateChargeStationCommandHandler : IRequestHandler<CreateChargeSta
 
         await _unitOfWork.CompleteAsync(cancellationToken);
 
-        return chargeStation;
+        return Result<Domain.Entities.ChargeStation>.Success(chargeStation);
     }
 }

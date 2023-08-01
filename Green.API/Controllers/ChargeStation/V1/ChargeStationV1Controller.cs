@@ -21,7 +21,7 @@ namespace Green.API.Controllers.ChargeStation.V1
         public async Task<IActionResult> CreateChargeStation(ChargeStationV1Model chargeStationModel)
         {
             var chargeStation = await _mediator.Send(new CreateChargeStationCommand(chargeStationModel.GroupId, chargeStationModel.Name));
-            return Created($"/api/chargeStation/{chargeStation.Id}", chargeStation);
+            return chargeStation.IsSuccess ? Created($"/api/chargeStation/{chargeStation.Value.Id}", chargeStation) : BadRequest();
         }
 
         [HttpGet("")]
