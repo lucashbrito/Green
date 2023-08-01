@@ -25,7 +25,7 @@ public class Result
 public class Result<T> : Result
 {
     private readonly T _value;
-    public new T Value
+    public T Value
     {
         get
         {

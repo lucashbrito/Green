@@ -9,9 +9,9 @@ public class ChargeStation : Entity
     public string Name { get; private set; }
     public Guid GroupId { get; private set; }
 
-    public IReadOnlyCollection<Connector> Connectors => _connectors?.AsReadOnly();
+    public IReadOnlyCollection<Connector> Connectors => _connectors.AsReadOnly();
 
-    protected ChargeStation() { }
+    protected ChargeStation() { _connectors = new(); }
 
     public ChargeStation(string name, Group group)
     {

@@ -34,13 +34,13 @@ public class ChargeStationTests
         _mockGroupRepository.Setup(x => x.GetById(groupId)).ReturnsAsync(group);
 
         // Act
-        var chargeStation = await handler.Handle(createChargeStationCommand, CancellationToken.None);
+        var result = await handler.Handle(createChargeStationCommand, CancellationToken.None);
 
         // Assert
-        Assert.NotNull(chargeStation);
-        Assert.Equal("Test ChargeStation", chargeStation.Name);
+        Assert.NotNull(result);
+        Assert.Equal("Test ChargeStation", result.Value.Name);
         _mockGroupRepository.Verify(x => x.GetById(groupId), Times.Once);
-        _mockStationRepository.Verify(x => x.Add(chargeStation), Times.Once);
+        _mockStationRepository.Verify(x => x.Add(result.Value), Times.Once);
         _unitOfWork.Verify(x => x.CompleteAsync(It.IsAny<CancellationToken>()), Times.Once);
     }
 

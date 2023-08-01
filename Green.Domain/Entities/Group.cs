@@ -12,7 +12,7 @@ public class Group : Entity
 
     public IReadOnlyCollection<ChargeStation> ChargeStations => _chargeStations?.AsReadOnly();
 
-    protected Group() { }
+    protected Group() { _chargeStations = new(); }
     public Group(string name, int capacityInAmps)
     {
         if (string.IsNullOrWhiteSpace(name))
