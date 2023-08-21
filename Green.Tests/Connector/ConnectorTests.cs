@@ -2,6 +2,7 @@
 using Green.Application.Connector.Commands;
 using Green.Domain.Abstractions;
 using Green.Domain.Abstractions.IRepositories;
+using Green.Domain.Abstractions.IServices;
 using Moq;
 
 namespace Green.Tests.Connector;
@@ -11,6 +12,7 @@ public class ConnectorCommandHandlerTests
     private Mock<IConnectorRepository> _mockConnectorRepository;
     private Mock<IGroupRepository> _mockGroupRepository;
     private Mock<IUnitOfWork> _mockUnitOfWork;
+    private Mock<IGroupServices> _mockGroupService;
 
     public ConnectorCommandHandlerTests()
     {
@@ -18,6 +20,7 @@ public class ConnectorCommandHandlerTests
         _mockConnectorRepository = new Mock<IConnectorRepository>();
         _mockGroupRepository = new Mock<IGroupRepository>();
         _mockUnitOfWork = new Mock<IUnitOfWork>();
+        _mockGroupService = new Mock<IGroupServices>();
 
         _mockUnitOfWork.Setup(u => u.ChargeStationRepository).Returns(_mockStationRepository.Object);
         _mockUnitOfWork.Setup(u => u.GroupRepository).Returns(_mockGroupRepository.Object);
@@ -35,7 +38,7 @@ public class ConnectorCommandHandlerTests
         _mockConnectorRepository.Setup(m => m.GetById(connectorId)).ReturnsAsync(connector);
 
         var command = new UpdateConnectorMaxCurrentCommand(connectorId, 30);
-        var handler = new UpdateConnectorMaxCurrentCommandHandler(_mockUnitOfWork.Object);
+        var handler = new UpdateConnectorMaxCurrentCommandHandler(_mockUnitOfWork.Object, _mockGroupService.Object);
 
         // Act
         await handler.Handle(command, CancellationToken.None);
@@ -84,7 +87,7 @@ public class ConnectorCommandHandlerTests
         _mockConnectorRepository.Setup(m => m.GetByChargeStationId(station.Id)).ReturnsAsync(connectors);
 
         var command = new CreateConnectorCommand(station.Id, 3, 40);
-        var handler = new CreateConnectorCommandHandler(_mockUnitOfWork.Object);
+        var handler = new CreateConnectorCommandHandler(_mockUnitOfWork.Object, _mockGroupService.Object);
 
         // Act
         var result = await handler.Handle(command, CancellationToken.None);
@@ -115,7 +118,7 @@ public class ConnectorCommandHandlerTests
         _mockConnectorRepository.Setup(m => m.GetByChargeStationId(station.Id)).ReturnsAsync(connectors);
 
         var command = new CreateConnectorCommand(station.Id, 3, 50);
-        var handler = new CreateConnectorCommandHandler(_mockUnitOfWork.Object);
+        var handler = new CreateConnectorCommandHandler(_mockUnitOfWork.Object, _mockGroupService.Object);
 
         // Act and Assert
         await Assert.ThrowsAsync<InvalidOperationException>(() => handler.Handle(command, CancellationToken.None));
@@ -128,7 +131,7 @@ public class ConnectorCommandHandlerTests
 
         // Arrange
         var command = new CreateConnectorCommand(Guid.NewGuid(), 1, 20);
-        var handler = new CreateConnectorCommandHandler(_mockUnitOfWork.Object);
+        var handler = new CreateConnectorCommandHandler(_mockUnitOfWork.Object, _mockGroupService.Object);
 
         // Act
         Func<Task> act = async () => await handler.Handle(command, CancellationToken.None);
@@ -147,7 +150,7 @@ public class ConnectorCommandHandlerTests
         _mockStationRepository.Setup(m => m.GetById(It.IsAny<Guid>())).ReturnsAsync(station);
 
         var command = new CreateConnectorCommand(station.Id, 6, 20);
-        var handler = new CreateConnectorCommandHandler(_mockUnitOfWork.Object);
+        var handler = new CreateConnectorCommandHandler(_mockUnitOfWork.Object, _mockGroupService.Object);
 
         // Act
         Func<Task> act = async () => await handler.Handle(command, CancellationToken.None);
@@ -166,7 +169,7 @@ public class ConnectorCommandHandlerTests
         _mockStationRepository.Setup(m => m.GetById(It.IsAny<Guid>())).ReturnsAsync(station);
 
         var command = new CreateConnectorCommand(Guid.NewGuid(), 1, 0);
-        var handler = new CreateConnectorCommandHandler(_mockUnitOfWork.Object);
+        var handler = new CreateConnectorCommandHandler(_mockUnitOfWork.Object, _mockGroupService.Object);
 
         // Act
         Func<Task> act = async () => await handler.Handle(command, CancellationToken.None);
