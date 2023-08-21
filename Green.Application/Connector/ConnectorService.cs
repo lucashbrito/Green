@@ -1,25 +1,25 @@
-﻿using Green.Domain.Abstractions.IRepositories;
+﻿using Green.Domain.Abstractions;
 using Green.Domain.Abstractions.IServices;
 
 namespace Green.Application.Connector;
 
 public class ConnectorService : IConnectorService
 {
-    private readonly IConnectorRepository _connectorRepository;
+    private readonly IUnitOfWork _unitOfWork;
 
-    public ConnectorService(IConnectorRepository connectorRepository)
+    public ConnectorService(IUnitOfWork unitOfWork)
     {
-        _connectorRepository = connectorRepository;
+        _unitOfWork = unitOfWork;
     }
 
     public async Task RemoveConnectorByChargeStation(Guid stationId)
     {
-        var connectors = await _connectorRepository.GetByChargeStationId(stationId);
+        var connectors = await _unitOfWork.ConnectorRepository.GetByChargeStationId(stationId);
 
         if (connectors is null || connectors.Count == 0)
             return;
 
         foreach (var connector in connectors)
-            _connectorRepository.Remove(connector);
+            _unitOfWork.ConnectorRepository.Remove(connector);
     }
 }

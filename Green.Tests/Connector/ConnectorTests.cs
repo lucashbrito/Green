@@ -18,6 +18,10 @@ public class ConnectorCommandHandlerTests
         _mockConnectorRepository = new Mock<IConnectorRepository>();
         _mockGroupRepository = new Mock<IGroupRepository>();
         _mockUnitOfWork = new Mock<IUnitOfWork>();
+
+        _mockUnitOfWork.Setup(u => u.ChargeStationRepository).Returns(_mockStationRepository.Object);
+        _mockUnitOfWork.Setup(u => u.GroupRepository).Returns(_mockGroupRepository.Object);
+        _mockUnitOfWork.Setup(u => u.ConnectorRepository).Returns(_mockConnectorRepository.Object);
     }
 
     [Fact]
@@ -31,7 +35,7 @@ public class ConnectorCommandHandlerTests
         _mockConnectorRepository.Setup(m => m.GetById(connectorId)).ReturnsAsync(connector);
 
         var command = new UpdateConnectorMaxCurrentCommand(connectorId, 30);
-        var handler = new UpdateConnectorMaxCurrentCommandHandler(_mockConnectorRepository.Object, _mockUnitOfWork.Object);
+        var handler = new UpdateConnectorMaxCurrentCommandHandler(_mockUnitOfWork.Object);
 
         // Act
         await handler.Handle(command, CancellationToken.None);
@@ -53,7 +57,7 @@ public class ConnectorCommandHandlerTests
         _mockConnectorRepository.Setup(m => m.GetById(connectorId)).ReturnsAsync(connector);
 
         var command = new RemoveConnectorCommand(connectorId);
-        var handler = new RemoveConnectorCommandHandler(_mockConnectorRepository.Object, _mockUnitOfWork.Object);
+        var handler = new RemoveConnectorCommandHandler(_mockUnitOfWork.Object);
 
         // Act
         await handler.Handle(command, CancellationToken.None);
@@ -80,7 +84,7 @@ public class ConnectorCommandHandlerTests
         _mockConnectorRepository.Setup(m => m.GetByChargeStationId(station.Id)).ReturnsAsync(connectors);
 
         var command = new CreateConnectorCommand(station.Id, 3, 40);
-        var handler = new CreateConnectorCommandHandler(_mockStationRepository.Object, _mockConnectorRepository.Object, _mockUnitOfWork.Object, _mockGroupRepository.Object);
+        var handler = new CreateConnectorCommandHandler(_mockUnitOfWork.Object);
 
         // Act
         var result = await handler.Handle(command, CancellationToken.None);
@@ -111,7 +115,7 @@ public class ConnectorCommandHandlerTests
         _mockConnectorRepository.Setup(m => m.GetByChargeStationId(station.Id)).ReturnsAsync(connectors);
 
         var command = new CreateConnectorCommand(station.Id, 3, 50);
-        var handler = new CreateConnectorCommandHandler(_mockStationRepository.Object, _mockConnectorRepository.Object, _mockUnitOfWork.Object, _mockGroupRepository.Object);
+        var handler = new CreateConnectorCommandHandler(_mockUnitOfWork.Object);
 
         // Act and Assert
         await Assert.ThrowsAsync<InvalidOperationException>(() => handler.Handle(command, CancellationToken.None));
@@ -124,7 +128,7 @@ public class ConnectorCommandHandlerTests
 
         // Arrange
         var command = new CreateConnectorCommand(Guid.NewGuid(), 1, 20);
-        var handler = new CreateConnectorCommandHandler(_mockStationRepository.Object, _mockConnectorRepository.Object, _mockUnitOfWork.Object, _mockGroupRepository.Object);
+        var handler = new CreateConnectorCommandHandler(_mockUnitOfWork.Object);
 
         // Act
         Func<Task> act = async () => await handler.Handle(command, CancellationToken.None);
@@ -143,7 +147,7 @@ public class ConnectorCommandHandlerTests
         _mockStationRepository.Setup(m => m.GetById(It.IsAny<Guid>())).ReturnsAsync(station);
 
         var command = new CreateConnectorCommand(station.Id, 6, 20);
-        var handler = new CreateConnectorCommandHandler(_mockStationRepository.Object, _mockConnectorRepository.Object, _mockUnitOfWork.Object, _mockGroupRepository.Object);
+        var handler = new CreateConnectorCommandHandler(_mockUnitOfWork.Object);
 
         // Act
         Func<Task> act = async () => await handler.Handle(command, CancellationToken.None);
@@ -162,7 +166,7 @@ public class ConnectorCommandHandlerTests
         _mockStationRepository.Setup(m => m.GetById(It.IsAny<Guid>())).ReturnsAsync(station);
 
         var command = new CreateConnectorCommand(Guid.NewGuid(), 1, 0);
-        var handler = new CreateConnectorCommandHandler(_mockStationRepository.Object, _mockConnectorRepository.Object, _mockUnitOfWork.Object, _mockGroupRepository.Object);
+        var handler = new CreateConnectorCommandHandler(_mockUnitOfWork.Object);
 
         // Act
         Func<Task> act = async () => await handler.Handle(command, CancellationToken.None);

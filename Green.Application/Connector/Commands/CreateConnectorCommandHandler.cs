@@ -1,5 +1,4 @@
 ﻿using Green.Domain.Abstractions;
-using Green.Domain.Abstractions.IRepositories;
 using Green.Domain.Extensions;
 using MediatR;
 
@@ -9,25 +8,16 @@ namespace Green.Application.Connector.Commands
 
     public class CreateConnectorCommandHandler : IRequestHandler<CreateConnectorCommand, Domain.Entities.Connector>
     {
-        private readonly IChargeStationRepository _chargeStationRepository;
-        private readonly IConnectorRepository _connectorRepository;
-        private readonly IGroupRepository _groupRepository;
         private readonly IUnitOfWork _unitOfWork;
 
-        public CreateConnectorCommandHandler(IChargeStationRepository stationRepository,
-            IConnectorRepository connectorRepository,
-            IUnitOfWork unitOfWork,
-            IGroupRepository groupRepository)
+        public CreateConnectorCommandHandler(IUnitOfWork unitOfWork)
         {
-            _chargeStationRepository = stationRepository;
-            _connectorRepository = connectorRepository;
             _unitOfWork = unitOfWork;
-            _groupRepository = groupRepository;
         }
 
         public async Task<Domain.Entities.Connector> Handle(CreateConnectorCommand request, CancellationToken cancellationToken)
         {
-            var station = await _chargeStationRepository.GetById(request.StationId);
+            var station = await _unitOfWork.ChargeStationRepository.GetById(request.StationId);
 
             station.NullGuard("station not found", nameof(station));
 
@@ -36,7 +26,7 @@ namespace Green.Application.Connector.Commands
             if (!await CheckGroupCapacity(station.GroupId))
                 throw new InvalidOperationException("The group's capacity is not sufficient.");
 
-            _connectorRepository.Add(connector);
+            _unitOfWork.ConnectorRepository.Add(connector);
 
             await _unitOfWork.CompleteAsync(cancellationToken);
 
@@ -45,11 +35,11 @@ namespace Green.Application.Connector.Commands
 
         private async Task<bool> CheckGroupCapacity(Guid groupId)
         {
-            var group = await _groupRepository.GetById(groupId);
+            var group = await _unitOfWork.GroupRepository.GetById(groupId);
 
             group.NullGuard("Group not found", nameof(group));
 
-            var chargeStations = await _chargeStationRepository.GetByGroupId(groupId);
+            var chargeStations = await _unitOfWork.ChargeStationRepository.GetByGroupId(groupId);
             var totalConnectorCurrent = 0.0;
 
             if (chargeStations is null)
@@ -57,7 +47,7 @@ namespace Green.Application.Connector.Commands
 
             foreach (var station in chargeStations)
             {
-                var connectors = await _connectorRepository.GetByChargeStationId(station.Id);
+                var connectors = await _unitOfWork.ConnectorRepository.GetByChargeStationId(station.Id);
                 totalConnectorCurrent += connectors.Sum(c => c.MaxCurrentInAmps);
             }
 

@@ -1,5 +1,4 @@
 ﻿using Green.Domain.Abstractions;
-using Green.Domain.Abstractions.IRepositories;
 using Green.Domain.Extensions;
 using MediatR;
 
@@ -9,22 +8,20 @@ public record RemoveConnectorCommand(Guid ConnectorId) : IRequest;
 
 public class RemoveConnectorCommandHandler : IRequestHandler<RemoveConnectorCommand>
 {
-    private readonly IConnectorRepository _connectorRepository;
     private readonly IUnitOfWork _unitOfWork;
 
-    public RemoveConnectorCommandHandler(IConnectorRepository connectorRepository, IUnitOfWork unitOfWork)
+    public RemoveConnectorCommandHandler(IUnitOfWork unitOfWork)
     {
-        _connectorRepository = connectorRepository;
         _unitOfWork = unitOfWork;
     }
 
     public async Task Handle(RemoveConnectorCommand request, CancellationToken cancellationToken)
     {
-        var connector = await _connectorRepository.GetById(request.ConnectorId);
+        var connector = await _unitOfWork.ConnectorRepository.GetById(request.ConnectorId);
 
         connector.NullGuard("connector not found", nameof(connector));
 
-        _connectorRepository.Remove(connector);
+        _unitOfWork.ConnectorRepository.Remove(connector);
 
         await _unitOfWork.CompleteAsync(cancellationToken);
     }

@@ -1,10 +1,8 @@
-using FluentAssertions.Common;
 using FluentAssertions;
 using Green.Application.ChargeStation.Commands;
 using Green.Domain.Abstractions;
 using Green.Domain.Abstractions.IRepositories;
 using Moq;
-using Green.Infrastructure.Repositories;
 
 namespace Green.Tests.ChargeStation;
 
@@ -19,6 +17,9 @@ public class ChargeStationTests
         _mockGroupRepository = new Mock<IGroupRepository>();
         _mockStationRepository = new Mock<IChargeStationRepository>();
         _unitOfWork = new Mock<IUnitOfWork>();
+
+        _unitOfWork.Setup(u => u.ChargeStationRepository).Returns(_mockStationRepository.Object);
+        _unitOfWork.Setup(u => u.GroupRepository).Returns(_mockGroupRepository.Object);
     }
 
     [Fact]
@@ -29,7 +30,7 @@ public class ChargeStationTests
         var groupName = "Test Group";
         var group = new Domain.Entities.Group(groupName, 100);
         var createChargeStationCommand = new CreateChargeStationCommand(groupId, "Test ChargeStation");
-        var handler = new CreateChargeStationCommandHandler(_mockGroupRepository.Object, _mockStationRepository.Object, _unitOfWork.Object);
+        var handler = new CreateChargeStationCommandHandler(_unitOfWork.Object);
 
         _mockGroupRepository.Setup(x => x.GetById(groupId)).ReturnsAsync(group);
 
@@ -57,7 +58,7 @@ public class ChargeStationTests
         var chargeStation = new Domain.Entities.ChargeStation(stationName, group);
 
         var updateChargeStationCommand = new UpdateChargeStationCommand(stationId, "New Station Name", groupId);
-        var handler = new UpdateChargeStationCommandHandler(_mockStationRepository.Object, _mockGroupRepository.Object, _unitOfWork.Object);
+        var handler = new UpdateChargeStationCommandHandler(_unitOfWork.Object);
 
         _mockStationRepository.Setup(x => x.GetById(stationId)).ReturnsAsync(chargeStation);
         _mockGroupRepository.Setup(x => x.GetById(groupId)).ReturnsAsync(group);
@@ -88,7 +89,7 @@ public class ChargeStationTests
         var chargeStation = new Domain.Entities.ChargeStation(stationName, group);
 
         var removeChargeStationCommand = new RemoveChargeStationCommand(stationId);
-        var handler = new RemoveChargeStationCommandHandler(_mockStationRepository.Object, _unitOfWork.Object);
+        var handler = new RemoveChargeStationCommandHandler(_unitOfWork.Object);
 
         _mockStationRepository.Setup(x => x.GetById(stationId)).ReturnsAsync(chargeStation);
 
@@ -109,7 +110,7 @@ public class ChargeStationTests
         _mockGroupRepository.Setup(x => x.GetById(groupId));
 
         var createChargeStationCommand = new CreateChargeStationCommand(groupId, chargeStationName);
-        var handler = new CreateChargeStationCommandHandler(_mockGroupRepository.Object, _mockStationRepository.Object, _unitOfWork.Object);
+        var handler = new CreateChargeStationCommandHandler(_unitOfWork.Object);
 
         // Act
         Func<Task> act = async () => await handler.Handle(createChargeStationCommand, CancellationToken.None);

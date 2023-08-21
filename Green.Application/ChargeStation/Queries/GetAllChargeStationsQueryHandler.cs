@@ -1,5 +1,5 @@
 ﻿using Green.Application.Abstractions.Queries;
-using Green.Domain.Abstractions.IRepositories;
+using Green.Domain.Abstractions;
 using Green.Domain.Shared;
 
 namespace Green.Application.ChargeStation.Queries;
@@ -8,15 +8,15 @@ public class GetAllChargeStationsQuery : IQuery<List<Domain.Entities.ChargeStati
 
 public class GetAllChargeStationsQueryHandler : IQueryHandler<GetAllChargeStationsQuery, List<Domain.Entities.ChargeStation>>
 {
-    private readonly IChargeStationRepository _chargeStationRepository;
+    private readonly IUnitOfWork _unitOfWork;
 
-    public GetAllChargeStationsQueryHandler(IChargeStationRepository chargeStationRepository)
+    public GetAllChargeStationsQueryHandler(IUnitOfWork unitOfWork)
     {
-        _chargeStationRepository = chargeStationRepository;
+        _unitOfWork = unitOfWork;
     }
 
     public async Task<Result<List<Domain.Entities.ChargeStation>>> Handle(GetAllChargeStationsQuery request, CancellationToken cancellationToken)
     {
-        return Result<List<Domain.Entities.ChargeStation>>.Success(await _chargeStationRepository.GetAll());
+        return Result<List<Domain.Entities.ChargeStation>>.Success(await _unitOfWork.ChargeStationRepository.GetAll());
     }
 }

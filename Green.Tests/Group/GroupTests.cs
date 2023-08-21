@@ -1,5 +1,4 @@
 ﻿using FluentAssertions;
-using FluentAssertions.Common;
 using Green.Application.Group.Commands;
 using Green.Domain.Abstractions;
 using Green.Domain.Abstractions.IRepositories;
@@ -16,6 +15,7 @@ public class GroupCommandHandlerTests
     {
         _mockGroupRepository = new Mock<IGroupRepository>();
         _mockUnitOfWork = new Mock<IUnitOfWork>();
+        _mockUnitOfWork.Setup(u => u.GroupRepository).Returns(_mockGroupRepository.Object);
     }
 
     [Fact]
@@ -23,7 +23,7 @@ public class GroupCommandHandlerTests
     {
         // Arrange
         var command = new CreateGroupCommand("Test Group", 100);
-        var handler = new CreateGroupCommandHandler(_mockGroupRepository.Object, _mockUnitOfWork.Object);
+        var handler = new CreateGroupCommandHandler(_mockUnitOfWork.Object);
 
         // Act
         var result = await handler.Handle(command, CancellationToken.None);
@@ -45,7 +45,7 @@ public class GroupCommandHandlerTests
         _mockGroupRepository.Setup(m => m.GetById(groupId)).ReturnsAsync(group);
 
         var command = new UpdateGroupCommand(groupId, "Updated Group", 200);
-        var handler = new UpdateGroupCommandHandler(_mockGroupRepository.Object, _mockUnitOfWork.Object);
+        var handler = new UpdateGroupCommandHandler(_mockUnitOfWork.Object);
 
         // Act
         await handler.Handle(command, CancellationToken.None);
@@ -66,7 +66,7 @@ public class GroupCommandHandlerTests
         _mockGroupRepository.Setup(m => m.GetById(groupId)).ReturnsAsync(group);
 
         var command = new RemoveGroupCommand(groupId);
-        var handler = new RemoveGroupCommandHandler(_mockGroupRepository.Object, _mockUnitOfWork.Object);
+        var handler = new RemoveGroupCommandHandler(_mockUnitOfWork.Object);
 
         // Act
         await handler.Handle(command, CancellationToken.None);

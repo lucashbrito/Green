@@ -1,4 +1,4 @@
-﻿using Green.Domain.Abstractions.IRepositories;
+﻿using Green.Domain.Abstractions;
 using MediatR;
 
 namespace Green.Application.Group.Queries;
@@ -7,15 +7,15 @@ public class GetAllGroupsQuery : IRequest<List<Domain.Entities.Group>> { }
 
 public class GetAllGroupsQueryHandler : IRequestHandler<GetAllGroupsQuery, List<Domain.Entities.Group>>
 {
-    private readonly IGroupRepository _groupRepository;
+    private readonly IUnitOfWork _unitOfWork;
 
-    public GetAllGroupsQueryHandler(IGroupRepository groupRepository)
+    public GetAllGroupsQueryHandler(IUnitOfWork unitOfWork)
     {
-        _groupRepository = groupRepository;
+        _unitOfWork = unitOfWork;
     }
 
     public async Task<List<Domain.Entities.Group>> Handle(GetAllGroupsQuery request, CancellationToken cancellationToken)
     {
-        return await _groupRepository.GetAll();
+        return await _unitOfWork.GroupRepository.GetAll();
     }
 }

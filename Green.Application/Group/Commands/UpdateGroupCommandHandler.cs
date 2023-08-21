@@ -1,5 +1,4 @@
 ﻿using Green.Domain.Abstractions;
-using Green.Domain.Abstractions.IRepositories;
 using Green.Domain.Extensions;
 using MediatR;
 
@@ -9,25 +8,23 @@ namespace Green.Application.Group.Commands
 
     public class UpdateGroupCommandHandler : IRequestHandler<UpdateGroupCommand>
     {
-        private readonly IGroupRepository _groupRepository;
         private readonly IUnitOfWork _unitOfWork;
 
-        public UpdateGroupCommandHandler(IGroupRepository groupRepository, IUnitOfWork unitOfWork)
+        public UpdateGroupCommandHandler(IUnitOfWork unitOfWork)
         {
-            _groupRepository = groupRepository;
             _unitOfWork = unitOfWork;
         }
 
         public async Task Handle(UpdateGroupCommand request, CancellationToken cancellationToken)
         {
-            var group = await _groupRepository.GetById(request.GroupId);
+            var group = await _unitOfWork.GroupRepository.GetById(request.GroupId);
 
-            group.NullGuard("Group not found", nameof(group));            
+            group.NullGuard("Group not found", nameof(group));
 
             group.ChangeName(request.Name);
             group.ChangeCapacity(request.CapacityInAmps);
 
-            _groupRepository.Update(group);
+            _unitOfWork.GroupRepository.Update(group);
 
             await _unitOfWork.CompleteAsync(cancellationToken);
         }
