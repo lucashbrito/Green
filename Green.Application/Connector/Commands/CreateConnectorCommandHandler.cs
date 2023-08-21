@@ -1,4 +1,5 @@
 ﻿using Green.Domain.Abstractions;
+using Green.Domain.Abstractions.IServices;
 using Green.Domain.Extensions;
 using MediatR;
 
@@ -9,10 +10,12 @@ namespace Green.Application.Connector.Commands
     public class CreateConnectorCommandHandler : IRequestHandler<CreateConnectorCommand, Domain.Entities.Connector>
     {
         private readonly IUnitOfWork _unitOfWork;
+        private readonly IGroupServices _groupService;
 
-        public CreateConnectorCommandHandler(IUnitOfWork unitOfWork)
+        public CreateConnectorCommandHandler(IUnitOfWork unitOfWork, IGroupServices groupSerivce)
         {
             _unitOfWork = unitOfWork;
+            _groupService = groupSerivce;
         }
 
         public async Task<Domain.Entities.Connector> Handle(CreateConnectorCommand request, CancellationToken cancellationToken)
@@ -23,7 +26,7 @@ namespace Green.Application.Connector.Commands
 
             var connector = new Domain.Entities.Connector(request.Identifier, request.MaxCurrentInAmps, station.Id);
 
-            if (!await CheckGroupCapacity(station.GroupId))
+            if (!await _groupService.CheckGroupCapacity(station.GroupId, connector.MaxCurrentInAmps))
                 throw new InvalidOperationException("The group's capacity is not sufficient.");
 
             _unitOfWork.ConnectorRepository.Add(connector);
@@ -32,27 +35,5 @@ namespace Green.Application.Connector.Commands
 
             return connector;
         }
-
-        private async Task<bool> CheckGroupCapacity(Guid groupId)
-        {
-            var group = await _unitOfWork.GroupRepository.GetById(groupId);
-
-            group.NullGuard("Group not found", nameof(group));
-
-            var chargeStations = await _unitOfWork.ChargeStationRepository.GetByGroupId(groupId);
-            var totalConnectorCurrent = 0.0;
-
-            if (chargeStations is null)
-                return group.HasSufficientGroupCapacity(totalConnectorCurrent);
-
-            foreach (var station in chargeStations)
-            {
-                var connectors = await _unitOfWork.ConnectorRepository.GetByChargeStationId(station.Id);
-                totalConnectorCurrent += connectors.Sum(c => c.MaxCurrentInAmps);
-            }
-
-            return group.HasSufficientGroupCapacity(totalConnectorCurrent);
-        }
     }
-
 }
