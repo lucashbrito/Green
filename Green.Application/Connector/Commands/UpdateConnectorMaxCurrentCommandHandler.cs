@@ -10,9 +10,9 @@ public record UpdateConnectorMaxCurrentCommand(Guid ConnectorId, int MaxCurrentI
 public class UpdateConnectorMaxCurrentCommandHandler : IRequestHandler<UpdateConnectorMaxCurrentCommand>
 {
     private readonly IUnitOfWork _unitOfWork;
-    private readonly IGroupServices _groupService;
+    private readonly IGroupService _groupService;
 
-    public UpdateConnectorMaxCurrentCommandHandler(IUnitOfWork unitOfWork, IGroupServices groupService)
+    public UpdateConnectorMaxCurrentCommandHandler(IUnitOfWork unitOfWork, IGroupService groupService)
     {
         _unitOfWork = unitOfWork;
         _groupService = groupService;

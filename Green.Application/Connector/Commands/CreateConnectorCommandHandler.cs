@@ -10,9 +10,9 @@ namespace Green.Application.Connector.Commands
     public class CreateConnectorCommandHandler : IRequestHandler<CreateConnectorCommand, Domain.Entities.Connector>
     {
         private readonly IUnitOfWork _unitOfWork;
-        private readonly IGroupServices _groupService;
+        private readonly IGroupService _groupService;
 
-        public CreateConnectorCommandHandler(IUnitOfWork unitOfWork, IGroupServices groupSerivce)
+        public CreateConnectorCommandHandler(IUnitOfWork unitOfWork, IGroupService groupSerivce)
         {
             _unitOfWork = unitOfWork;
             _groupService = groupSerivce;

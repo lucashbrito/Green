@@ -12,7 +12,7 @@ public class ConnectorCommandHandlerTests
     private Mock<IConnectorRepository> _mockConnectorRepository;
     private Mock<IGroupRepository> _mockGroupRepository;
     private Mock<IUnitOfWork> _mockUnitOfWork;
-    private Mock<IGroupServices> _mockGroupService;
+    private Mock<IGroupService> _mockGroupService;
 
     public ConnectorCommandHandlerTests()
     {
@@ -20,7 +20,7 @@ public class ConnectorCommandHandlerTests
         _mockConnectorRepository = new Mock<IConnectorRepository>();
         _mockGroupRepository = new Mock<IGroupRepository>();
         _mockUnitOfWork = new Mock<IUnitOfWork>();
-        _mockGroupService = new Mock<IGroupServices>();
+        _mockGroupService = new Mock<IGroupService>();
 
         _mockUnitOfWork.Setup(u => u.ChargeStationRepository).Returns(_mockStationRepository.Object);
         _mockUnitOfWork.Setup(u => u.GroupRepository).Returns(_mockGroupRepository.Object);

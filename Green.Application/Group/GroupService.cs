@@ -4,11 +4,11 @@ using Green.Domain.Extensions;
 
 namespace Green.Application.Group
 {
-    public class GroupServices : IGroupServices
+    public class GroupService : IGroupService
     {
         private readonly IUnitOfWork _unitOfWork;
 
-        public GroupServices(IUnitOfWork unitOfWork)
+        public GroupService(IUnitOfWork unitOfWork)
         {
             _unitOfWork = unitOfWork;
         }

@@ -1,6 +1,6 @@
 ﻿namespace Green.Domain.Abstractions.IServices;
 
-public interface IGroupServices
+public interface IGroupService
 {
     Task<bool> CheckGroupCapacity(Guid groupId, int maxCurrentInAmps);
 }
