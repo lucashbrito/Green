@@ -2,73 +2,72 @@
 using Green.Domain.Entities;
 using Microsoft.Extensions.Caching.Memory;
 
-namespace Green.Infrastructure.Repositories
+namespace Green.Infrastructure.Repositories;
+
+public class CachedChargeStationRepository : IChargeStationRepository
 {
-    public class CachedChargeStationRepository : IChargeStationRepository
+    private readonly IChargeStationRepository _decorated;
+    private readonly IMemoryCache _cache;
+    private readonly TimeSpan time = TimeSpan.FromMinutes(5);
+    private readonly string cacheName = "chargeStation";
+
+    public CachedChargeStationRepository(IChargeStationRepository chargeStationRepository, IMemoryCache cache)
     {
-        private readonly IChargeStationRepository _decorated;
-        private readonly IMemoryCache _cache;
-        private readonly TimeSpan time = TimeSpan.FromMinutes(5);
-        private readonly string cacheName = "chargeStation";
+        _decorated = chargeStationRepository;
+        _cache = cache;
+    }
 
-        public CachedChargeStationRepository(IChargeStationRepository chargeStationRepository, IMemoryCache cache)
+    public void Add(ChargeStation chargeStation)
+    {
+        _decorated.Add(chargeStation);
+        _cache.Set($"{cacheName}-{chargeStation.Id}", chargeStation, time);
+        _cache.Remove($"all-{cacheName}s");
+    }
+
+    public async Task<List<ChargeStation>> GetAll()
+    {
+        var key = $"all-{cacheName}s";
+
+        return await _cache.GetOrCreateAsync(key, async entry =>
         {
-            _decorated = chargeStationRepository;
-            _cache = cache;
-        }
+            entry.SetAbsoluteExpiration(time);
+            return await _decorated.GetAll();
+        });
+    }
 
-        public void Add(ChargeStation chargeStation)
-        {
-            _decorated.Add(chargeStation);
-            _cache.Set($"{cacheName}-{chargeStation.Id}", chargeStation, time);
-            _cache.Remove($"all-{cacheName}s");
-        }
+    public async Task<List<ChargeStation>> GetByGroupId(Guid groupId)
+    {
+        var key = $"chargeStation-{groupId}";
 
-        public async Task<List<ChargeStation>> GetAll()
-        {
-            var key = $"all-{cacheName}s";
 
-            return await _cache.GetOrCreateAsync(key, async entry =>
+        return await _cache.GetOrCreateAsync(key,
+            entry =>
             {
                 entry.SetAbsoluteExpiration(time);
-                return await _decorated.GetAll();
+
+                return _decorated.GetByGroupId(groupId);
             });
-        }
+    }
 
-        public async Task<List<ChargeStation>> GetByGroupId(Guid groupId)
-        {
-            var key = $"chargeStation-{groupId}";
+    public async Task<ChargeStation> GetById(Guid stationId)
+    {
+        return await _decorated.GetById(stationId);
+    }
 
+    public async Task<bool> HasChargeStationInAnyGroupId(Guid groupId)
+    {
+        return await _decorated.HasChargeStationInAnyGroupId(groupId);
+    }
 
-            return await _cache.GetOrCreateAsync(key,
-                entry =>
-                {
-                    entry.SetAbsoluteExpiration(time);
+    public void Remove(ChargeStation chargeStation)
+    {
+        _decorated.Remove(chargeStation);
+        _cache.Remove($"{cacheName}-{chargeStation.Id}");
+    }
 
-                    return _decorated.GetByGroupId(groupId);
-                });
-        }
-
-        public async Task<ChargeStation> GetById(Guid stationId)
-        {
-            return await _decorated.GetById(stationId);
-        }
-
-        public async Task<bool> HasChargeStationInAnyGroupId(Guid groupId)
-        {
-            return await _decorated.HasChargeStationInAnyGroupId(groupId);
-        }
-
-        public void Remove(ChargeStation chargeStation)
-        {
-            _decorated.Remove(chargeStation);
-            _cache.Remove($"{cacheName}-{chargeStation.Id}");
-        }
-
-        public void Update(ChargeStation chargeStation)
-        {
-            _decorated.Update(chargeStation);
-            _cache.Set($"{cacheName} -{chargeStation.Id}", chargeStation, time);
-        }
+    public void Update(ChargeStation chargeStation)
+    {
+        _decorated.Update(chargeStation);
+        _cache.Set($"{cacheName} -{chargeStation.Id}", chargeStation, time);
     }
 }

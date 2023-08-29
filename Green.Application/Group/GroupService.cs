@@ -2,38 +2,37 @@
 using Green.Domain.Abstractions.IServices;
 using Green.Domain.Extensions;
 
-namespace Green.Application.Group
+namespace Green.Application.Group;
+
+public class GroupService : IGroupService
 {
-    public class GroupService : IGroupService
+    private readonly IUnitOfWork _unitOfWork;
+
+    public GroupService(IUnitOfWork unitOfWork)
     {
-        private readonly IUnitOfWork _unitOfWork;
+        _unitOfWork = unitOfWork;
+    }
 
-        public GroupService(IUnitOfWork unitOfWork)
-        {
-            _unitOfWork = unitOfWork;
-        }
+    public async Task<bool> CheckGroupCapacity(Guid groupId, int maxCurrentInAmps)
+    {
+        var group = await _unitOfWork.GroupRepository.GetById(groupId);
 
-        public async Task<bool> CheckGroupCapacity(Guid groupId, int maxCurrentInAmps)
-        {
-            var group = await _unitOfWork.GroupRepository.GetById(groupId);
+        group.NullGuard("Group not found", nameof(group));
 
-            group.NullGuard("Group not found", nameof(group));
+        var chargeStations = await _unitOfWork.ChargeStationRepository.GetByGroupId(groupId);
+        var totalConnectorCurrent = 0.0;
 
-            var chargeStations = await _unitOfWork.ChargeStationRepository.GetByGroupId(groupId);
-            var totalConnectorCurrent = 0.0;
-
-            if (chargeStations is null)
-                return group.HasSufficientGroupCapacity(totalConnectorCurrent);
-
-            foreach (var station in chargeStations)
-            {
-                var connectors = await _unitOfWork.ConnectorRepository.GetByChargeStationId(station.Id);
-                totalConnectorCurrent += connectors.Sum(c => c.MaxCurrentInAmps);
-            }
-
-            totalConnectorCurrent += maxCurrentInAmps;
-
+        if (chargeStations is null)
             return group.HasSufficientGroupCapacity(totalConnectorCurrent);
+
+        foreach (var station in chargeStations)
+        {
+            var connectors = await _unitOfWork.ConnectorRepository.GetByChargeStationId(station.Id);
+            totalConnectorCurrent += connectors.Sum(c => c.MaxCurrentInAmps);
         }
+
+        totalConnectorCurrent += maxCurrentInAmps;
+
+        return group.HasSufficientGroupCapacity(totalConnectorCurrent);
     }
 }

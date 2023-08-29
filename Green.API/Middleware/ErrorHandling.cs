@@ -2,46 +2,45 @@
 using System.Net;
 using System.Text.Json;
 
-namespace Green.API.Middleware
+namespace Green.API.Middleware;
+
+public class ErrorHandling
 {
-    public class ErrorHandling
+    private readonly RequestDelegate _next;
+
+    public ErrorHandling(RequestDelegate next)
     {
-        private readonly RequestDelegate _next;
+        _next = next;
+    }
 
-        public ErrorHandling(RequestDelegate next)
+    public async Task Invoke(HttpContext context, ILogger<Exception> logger)
+    {
+        try
         {
-            _next = next;
+            await _next(context);
+        }
+        catch (Exception ex)
+        {
+            await HandleExceptionAsync(context, ex, logger);
+        }
+    }
+
+    private static Task HandleExceptionAsync(HttpContext context, Exception exception, ILogger<Exception> logger)
+    {
+        var code = HttpStatusCode.InternalServerError;
+
+        if (exception is ArgumentNullException or InvalidOperationException)
+            code = HttpStatusCode.BadRequest;
+
+
+        if (code == HttpStatusCode.InternalServerError)
+        {
+            logger.LogError(exception, "Processing request exception");
         }
 
-        public async Task Invoke(HttpContext context, ILogger<Exception> logger)
-        {
-            try
-            {
-                await _next(context);
-            }
-            catch (Exception ex)
-            {
-                await HandleExceptionAsync(context, ex, logger);
-            }
-        }
-
-        private static Task HandleExceptionAsync(HttpContext context, Exception exception, ILogger<Exception> logger)
-        {
-            var code = HttpStatusCode.InternalServerError;
-
-            if (exception is ArgumentNullException or InvalidOperationException)
-                code = HttpStatusCode.BadRequest;
-
-
-            if (code == HttpStatusCode.InternalServerError)
-            {
-                logger.LogError(exception, "Processing request exception");
-            }
-
-            var result = JsonSerializer.Serialize(new { error = exception.Message });
-            context.Response.ContentType = "application/json";
-            context.Response.StatusCode = (int)code;
-            return context.Response.WriteAsync(result);
-        }
+        var result = JsonSerializer.Serialize(new { error = exception.Message });
+        context.Response.ContentType = "application/json";
+        context.Response.StatusCode = (int)code;
+        return context.Response.WriteAsync(result);
     }
 }

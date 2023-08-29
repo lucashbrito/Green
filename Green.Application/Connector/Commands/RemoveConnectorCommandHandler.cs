@@ -4,6 +4,7 @@ using MediatR;
 
 namespace Green.Application.Connector.Commands;
 
+
 public record RemoveConnectorCommand(Guid ConnectorId) : IRequest;
 
 public class RemoveConnectorCommandHandler : IRequestHandler<RemoveConnectorCommand>

@@ -2,20 +2,19 @@
 using Green.Domain.DomainEvents;
 using MediatR;
 
-namespace Green.Application.ChargeStation.Events
+namespace Green.Application.ChargeStation.Events;
+
+public class ChargeStationRemovedDomainEventHandler : INotificationHandler<ChargeStationRemovedDomainEvent>
 {
-    public class ChargeStationRemovedDomainEventHandler : INotificationHandler<ChargeStationRemovedDomainEvent>
+    IConnectorService _connectorService;
+
+    public ChargeStationRemovedDomainEventHandler(IConnectorService connectorService)
     {
-        IConnectorService _connectorService;
+        _connectorService = connectorService;
+    }
 
-        public ChargeStationRemovedDomainEventHandler(IConnectorService connectorService)
-        {
-            _connectorService = connectorService;
-        }
-
-        public async Task Handle(ChargeStationRemovedDomainEvent notification, CancellationToken cancellationToken)
-        {
-            await _connectorService.RemoveConnectorByChargeStation(notification.ChargeStationId);
-        }
+    public async Task Handle(ChargeStationRemovedDomainEvent notification, CancellationToken cancellationToken)
+    {
+        await _connectorService.RemoveConnectorByChargeStation(notification.ChargeStationId);
     }
 }
